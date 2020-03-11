@@ -1,16 +1,23 @@
+load("@rules_jvm_external//:defs.bzl", "maven_install")
+
 def openapi_repositories(
       openapi_cli_version="4.0.3",
       openapi_cli_sha1="4a7e6d7c82df64a1d869e68f28f23e6afd0f9d85",
       prefix="io_bazel_rules_openapi"):
-
-    native.maven_jar(
-        name = prefix + "_io_swagger_swagger_codegen_cli",
-        artifact = "org.openapitools:openapi-generator-cli:" + openapi_cli_version,
-        sha1 = openapi_cli_sha1,
+    
+    maven_install(
+        name = "maven",
+        artifacts = [
+            "org.openapitools:openapi-generator-cli:" + openapi_cli_version,
+        ],
+        repositories = [
+            "https://repo1.maven.org/maven2"
+        ],
     )
+
     native.bind(
         name = prefix + '/dependency/openapi-cli',
-        actual = '@' + prefix + '_io_swagger_swagger_codegen_cli//jar',
+        actual = '@maven//:org_openapitools_openapi_generator_cli',
     )
 
 def _comma_separated_pairs(pairs):
